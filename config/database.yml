@@ -1,0 +1,18 @@
+# SQLite version 3.x
+shared: &shared
+  adapter: postgresql
+  encoding: utf8
+  username: <%= ENV["USER"] || "postgres" %>
+
+development:
+  <<: *shared
+  database: pixie_api_development
+
+test:
+  <<: *shared
+  database: pixie_api_test
+  min_messages: WARNING
+
+production:
+  <<: *shared
+  database: pixie_api_production
