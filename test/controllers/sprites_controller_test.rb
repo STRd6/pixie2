@@ -2,38 +2,43 @@ require 'test_helper'
 
 class SpritesControllerTest < ActionController::TestCase
   setup do
-    @sprite = sprites(:one)
+    @sprite = create :sprite
   end
 
-  test "should get index" do
-    get :index
-    assert_response :success
-    assert_not_nil assigns(:sprites)
+  should "not be able to edit another's sprite" do
+    get :edit, :id => @sprite.id
+    assert_response :redirect
   end
 
-  test "should create sprite" do
-    assert_difference('Sprite.count') do
-      post :create, sprite: { description: @sprite.description, height: @sprite.height, image_url: @sprite.image_url, owner_id: @sprite.owner_id, parent_id: @sprite.parent_id, title: @sprite.title, width: @sprite.width }
-    end
-
-    assert_response 201
-  end
-
-  test "should show sprite" do
-    get :show, id: @sprite
+  should "be able to view a sprite" do
+    get :show, :id => @sprite.id
     assert_response :success
   end
 
-  test "should update sprite" do
-    put :update, id: @sprite, sprite: { description: @sprite.description, height: @sprite.height, image_url: @sprite.image_url, owner_id: @sprite.owner_id, parent_id: @sprite.parent_id, title: @sprite.title, width: @sprite.width }
-    assert_response 204
-  end
-
-  test "should destroy sprite" do
-    assert_difference('Sprite.count', -1) do
-      delete :destroy, id: @sprite
+  context "a logged in user" do
+    setup do
+      @user = log_in
+      @sprite = create :sprite, :user => @user
     end
 
-    assert_response 204
+    should "be able to edit own sprite" do
+      get :edit, :id => @sprite.id
+      assert_response :success
+    end
+
+    should "be able to delete own sprite" do
+      post :destroy, :id => @sprite.id
+      assert_equal 'Sprite has been deleted.', flash[:notice]
+      assert_response :redirect
+    end
+
+    should "be able to save a sprite from the pixel editor" do
+      post :create,
+        sprite: {
+          width: "4",
+          height: "4",
+          file_base64_encoded: "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAE0lEQVQIW2N8zc73nwEJMJIuAAA/1wgBxJxmOgAAAABJRU5ErkJggg=="
+        }
+    end
   end
 end

@@ -4,7 +4,7 @@ class SpritesController < ApplicationController
   # GET /sprites
   # GET /sprites.json
   def index
-    @sprites = Sprite.all
+    @sprites = Sprite.limit(20)
 
     render json: @sprites
   end

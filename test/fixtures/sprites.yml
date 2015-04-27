@@ -3,17 +3,15 @@
 one:
   width: 1
   height: 1
-  owner_id: 
-  parent_id: 
+  user_id:
+  parent_id:
   title: MyString
   description: MyText
-  image_url: MyString
 
 two:
   width: 1
   height: 1
-  owner_id: 
-  parent_id: 
+  user_id:
+  parent_id:
   title: MyString
   description: MyText
-  image_url: MyString
