@@ -1,8 +1,57 @@
 Rails.application.routes.draw do
-  resources :comments, except: [:new, :edit]
-  resources :sprites, except: [:new, :edit]
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
+  root :to => "sprites#new"
+
+  get "login" => "user_sessions#new",
+    :as => :sign_in
+  get "logout" => "user_sessions#destroy",
+    :as => :sign_out
+  post "authenticate" => 'user_sessions#create',
+    :as => :authenticate
+
+  resources :comments, :password_resets
+
+  resources :sprites do
+    member do
+      get :load
+
+      post :add_favorite
+      post :remove_favorite
+
+      post :add_tag
+      post :remove_tag
+    end
+
+    collection do
+      get :upload
+      post :import
+    end
+  end
+
+  resources :people, :controller => :users, :as => :users, :except => :index, :path => '/' do
+    resources :sprites
+
+    member do
+      get :edit
+      get :recent_comments
+
+      put :update
+
+      post :add_to_collection
+      post :set_avatar
+    end
+
+    collection do
+      get :progress
+      get :unsubscribe
+
+      post :create
+      post :install_plugin
+      post :uninstall_plugin
+      post :do_unsubscribe
+    end
+  end
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'

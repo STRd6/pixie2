@@ -6,13 +6,13 @@ class Sprite < ActiveRecord::Base
 
   MAX_REPLAY_SIZE = 1000 * 50 # 50kb
 
-  # has_attached_file :image, S3_OPTS.merge(
-  #   :use_timestamp => false,
-  #   :path => "sprites/:id/:style.:extension",
-  #   :styles => {
-  #     :thumb => ["32x32#", :png]
-  #   }
-  # )
+  has_attached_file :image, S3_OPTS.merge(
+    :use_timestamp => false,
+    :path => "sprites/:id/:style.:extension",
+    :styles => {
+      :thumb => ["32x32#", :png]
+    }
+  )
 
   acts_as_taggable
   acts_as_taggable_on :dimension, :source
@@ -31,8 +31,6 @@ class Sprite < ActiveRecord::Base
   MAX_LENGTH = 640
   # Limit sizes to small pixel art for now
   validates_numericality_of :width, :height, :only_integer => true, :less_than_or_equal_to => MAX_LENGTH, :greater_than => 0, :message => "is too large"
-
-  before_validation :gather_metadata, :set_dimensions
 
   after_create :update_dimension_tags!, :save_replay_data, :associate_app, :convert_to_io
 
@@ -304,7 +302,7 @@ class Sprite < ActiveRecord::Base
     if title.blank?
       id
     else
-      "#{id}-#{title.seo_url}"
+      "#{id}-#{title.parameterize}"
     end
   end
 
@@ -365,12 +363,6 @@ class Sprite < ActiveRecord::Base
       File.open(replay_path, 'wb') do |file|
         file << replay_data
       end
-    end
-  end
-
-  def gather_metadata
-    if replay_data
-      self.replayable = true
     end
   end
 

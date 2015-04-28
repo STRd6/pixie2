@@ -1,21 +1,29 @@
 source 'https://rubygems.org'
 
-
 gem 'rails', '4.2.1'
-gem 'rails-api'
 
 gem 'acts-as-taggable-on'
 gem 'authlogic'
 gem 'aws-sdk'
+gem 'dynamic_form'
+gem 'haml-rails'
+gem 'paperclip'
 gem 'pg'
 gem 'pry'
 gem 'public_activity'
+gem 'responders'
 gem 'sanitize'
 gem 'spring', :group => :development
 gem 'unicorn'
 
+group :assets do
+  gem 'coffee-rails'
+  gem 'sass'
+end
+
 group :test do
   gem 'factory_girl_rails'
+  gem 'mocha', require: false
   gem 'shoulda'
 end
 

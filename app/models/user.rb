@@ -10,14 +10,14 @@ class User < ActiveRecord::Base
     config.require_password_confirmation = false
   end
 
-  # has_attached_file :avatar, S3_OPTS.merge(
-  #   :path => "avatars/:id/:style.:extension",
-  #   :styles => {
-  #     :large => ["256x256>", :png],
-  #     :thumb => ["32x32>", :png],
-  #     :tiny => ["20x20#", :png],
-  #   }
-  # )
+  has_attached_file :avatar, S3_OPTS.merge(
+    :path => "avatars/:id/:style.:extension",
+    :styles => {
+      :large => ["256x256>", :png],
+      :thumb => ["32x32>", :png],
+      :tiny => ["20x20#", :png],
+    }
+  )
 
   include Commentable
   include Oauthable
@@ -258,7 +258,7 @@ class User < ActiveRecord::Base
   end
 
   def send_welcome_email
-    Notifier.welcome_email(self).deliver unless email.blank?
+    Notifier.welcome_email(self).deliver_later unless email.blank?
   end
 
   def self.visit_report

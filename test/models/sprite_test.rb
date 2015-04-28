@@ -13,7 +13,7 @@ class SpriteTest < ActiveSupport::TestCase
 
     should "have a parent" do
       # Reload from DB
-      @sprite = Sprite.find(@sprite)
+      @sprite = Sprite.find(@sprite.id)
 
       assert_equal @parent, @sprite.parent
     end

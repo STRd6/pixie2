@@ -1,2 +1,77 @@
-class ApplicationController < ActionController::API
+class ApplicationController < ActionController::Base
+  def current_user_session
+    return @current_user_session if defined?(@current_user_session)
+    @current_user_session = UserSession.find
+  end
+
+  def current_user
+    return @current_user if defined?(@current_user)
+    @current_user = current_user_session && current_user_session.record
+  end
+  helper_method :current_user
+
+  def require_user
+    unless current_user
+      store_location
+      redirect_to new_user_session_url, :notice => "You must be logged in to access this page"
+      return false
+    end
+  end
+
+  def require_no_user
+    if current_user
+      store_location
+      redirect_to root_url, :notice => "You must be logged out to access this page"
+    end
+  end
+
+  def require_owner
+    unless owner?
+      redirect_to root_url, :notice => "You can only edit your own items!"
+    end
+  end
+
+  def require_access
+    unless has_access?
+      redirect_to root_url, :notice => "You do not have access to do this!"
+    end
+  end
+
+  def require_admin
+    unless admin?
+      redirect_to root_url, :notice => "Admin required"
+    end
+  end
+
+  def require_owner_or_admin
+    unless owner? || admin?
+      redirect_to root_url, :notice => "You can only edit your own items!"
+    end
+  end
+
+  def owner?(specified_object = nil)
+    owned_object = specified_object || object
+
+    return current_user && current_user == owned_object.user
+  end
+  helper_method :owner?
+
+  def has_access?
+    owner? || object.has_access?(current_user)
+  end
+  helper_method :has_access?
+
+  def admin?
+    current_user && current_user.admin?
+  end
+  helper_method :admin?
+
+  def owner_or_admin?(specified_object = nil)
+    owner?(specified_object) || admin?
+  end
+  helper_method :owner_or_admin?
+
+  def track_event(*args)
+    # TODO: !
+  end
 end

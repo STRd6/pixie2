@@ -28,8 +28,8 @@ class SpritesControllerTest < ActionController::TestCase
 
     should "be able to delete own sprite" do
       post :destroy, :id => @sprite.id
-      assert_equal 'Sprite has been deleted.', flash[:notice]
       assert_response :redirect
+      assert_equal 'Sprite has been deleted.', flash[:notice]
     end
 
     should "be able to save a sprite from the pixel editor" do

@@ -1,59 +1,224 @@
 class SpritesController < ApplicationController
-  before_action :set_sprite, only: [:show, :update, :destroy]
+  respond_to :html, :json
 
-  # GET /sprites
-  # GET /sprites.json
-  def index
-    @sprites = Sprite.limit(20)
+  before_filter :require_owner_or_admin, :only => [:destroy, :edit, :update]
+  before_filter :require_user, :only => [:add_tag, :remove_tag, :add_favorite, :remove_favorite]
 
-    render json: @sprites
-  end
-
-  # GET /sprites/1
-  # GET /sprites/1.json
-  def show
-    render json: @sprite
-  end
-
-  # POST /sprites
-  # POST /sprites.json
   def create
-    @sprite = Sprite.new(sprite_params)
+    @sprite = Sprite.create sprite_params
 
-    if @sprite.save
-      render json: @sprite, status: :created, location: @sprite
-    else
-      render json: @sprite.errors, status: :unprocessable_entity
+    track_event('create_sprite')
+
+    respond_to do |format|
+      format.html do
+        if sprite.user
+          redirect_to sprite
+        else
+          session[:saved_sprites] ||= {}
+          session[:saved_sprites][sprite.id] = sprite.broadcast
+
+          redirect_to sign_in_path
+        end
+      end
+      format.json do
+        if sprite.user
+          render :json => {
+            :sprite => {
+              :id => @sprite.id,
+              :title => @sprite.title,
+              :app_sprite_id => @sprite.app_sprite_id,
+              :src => @sprite.image.url
+            }
+          }
+        else
+          session[:saved_sprites] ||= {}
+          session[:saved_sprites][sprite.id] = sprite.broadcast
+
+          render :json => { :redirect => sign_in_path }
+        end
+      end
     end
   end
 
-  # PATCH/PUT /sprites/1
-  # PATCH/PUT /sprites/1.json
+  def new
+    unless params[:width].to_i <= 0
+      @width = [params[:width].to_i, Sprite::MAX_LENGTH].min
+    end
+
+    unless params[:height].to_i <= 0
+      @height = [params[:height].to_i, Sprite::MAX_LENGTH].min
+    end
+
+    @sprite = Sprite.new
+
+    render :action => :pixie
+  end
+
+  def index
+    load_sprites
+
+    respond_to do |format|
+      format.html { }
+      format.json { render :json => @sprites_data }
+    end
+  end
+
+  def show
+    respond_with(sprite) do |format|
+      format.json { render :json }
+    end
+  end
+
+  def edit
+  end
+
+  def destroy
+    @sprite = Sprite.find(params[:id])
+    @sprite.destroy
+    flash[:notice] = "Sprite has been deleted."
+    respond_with(@sprite)
+  end
+
   def update
     @sprite = Sprite.find(params[:id])
 
-    if @sprite.update(sprite_params)
-      head :no_content
-    else
-      render json: @sprite.errors, status: :unprocessable_entity
+    @sprite.update_attributes(params[:sprite])
+
+    respond_with(@sprite) do |format|
+      format.json { render :json => {
+          :id => @sprite.id,
+          :title => @sprite.display_name,
+          :description => @sprite.description || "",
+          :img => @sprite.image.url,
+          :author => (@sprite.user) ? @sprite.user.display_name : "Anonymous",
+          :author_id => @sprite.user_id
+        }
+      }
     end
   end
 
-  # DELETE /sprites/1
-  # DELETE /sprites/1.json
-  def destroy
-    @sprite.destroy
+  def load_sprites
+    @sprites = collection
 
-    head :no_content
+    current_page = @sprites.current_page
+    total = @sprites.total_pages
+    current_user_id = current_user ? current_user.id : nil
+    tags = Sprite.with_ids(@sprites).tag_counts
+
+    @sprites_data = {
+      :tagged => params[:tagged] || "",
+      :current_user_id => current_user_id,
+      :page => current_page,
+      :per_page => per_page,
+      :total => total,
+      :models => @sprites,
+      :tags => tags,
+    }
+  end
+
+  def load
+    @width = sprite.width
+    @height = sprite.height
+    @data = sprite.data[:frame_data]
+    @parent_id = sprite.id
+    @replay_data = sprite.load_replay_data if sprite.replayable?
+
+    render :action => :pixie
+  end
+
+
+  def import
+    @sprite = Sprite.new
+
+    @sprite.user = current_user
+    if @sprite.update_attributes(params[:sprite])
+      redirect_to @sprite
+    else
+      # Errors
+      render :action => :upload
+    end
+  end
+
+  def add_tag
+    sprite.add_tag(params[:tag])
+
+    respond_to do |format|
+      format.json { render :json => {:status => "ok"} }
+    end
+  end
+
+  def remove_tag
+    sprite.remove_tag(params[:tag])
+
+    respond_to do |format|
+      format.json { render :json => {:status => "ok"} }
+    end
+  end
+
+  def add_favorite
+    current_user.add_favorite(sprite)
+
+    respond_to do |format|
+      format.json { render :json => {:status => "ok"} }
+    end
+  end
+
+  def remove_favorite
+    current_user.remove_favorite(sprite)
+
+    respond_to do |format|
+      format.json { render :json => {:status => "ok"} }
+    end
   end
 
   private
 
-    def set_sprite
-      @sprite = Sprite.find(params[:id])
+  def sprite_params
+    params[:sprite].merge(:user => current_user).permit(:description)
+  end
+
+  def collection
+    @collection ||= if params[:tagged]
+      Sprite.tagged_with(params[:tagged]).order("id DESC").search(params[:search]).paginate(:page => params[:page], :per_page => per_page)
+    else
+      Sprite.order("id DESC").search(params[:search]).paginate(:page => params[:page], :per_page => per_page)
     end
 
-    def sprite_params
-      params.require(:sprite).permit(:width, :height, :owner_id, :parent_id, :title, :description, :image_url)
+    if params[:user_id].present?
+      @collection = @collection.for_user(User.find_by_display_name!(params[:user_id]))
     end
+
+    return @collection
+  end
+
+  def per_page
+    if params[:per_page].blank?
+      187
+    else
+      params[:per_page].to_i
+    end
+  end
+
+  helper_method :sprites
+  def sprites
+    return collection
+  end
+
+  helper_method :sprite
+  def sprite
+    return @sprite ||= Sprite.find(params[:id])
+  end
+
+  def object
+    sprite
+  end
+
+  helper_method :installed_tools
+  def installed_tools
+    if current_user
+      current_user.installed_plugins
+    else
+      []
+    end
+  end
 end

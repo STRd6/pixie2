@@ -1,0 +1,133 @@
+- @title = "Pixel Editor"
+- @fullscreen = true
+
+- unless sprite.new_record?
+  - @meta_desc = "Load #{sprite.meta_desc}"
+
+- width = @width || 32
+- height = @height || 32
+- data = @data
+- parent_data = sprite.parent_data
+
+%style
+  :sass
+    .editor.pixie
+      padding-top: 40px
+      padding-bottom: 40px
+
+      .opacity
+        top: -7px
+
+%section#pixie
+
+#optionsModal{ :style => 'display: none' }
+
+- content_for :javascript do
+  :coffeescript
+    $("html").dropImageReader
+      callback: ({file, event}) ->
+        canvas.fromDataURL(event.target.result)
+
+    $("html").pasteImageReader
+      callback: ({file, event}) ->
+        canvas.fromDataURL(event.target.result)
+
+    (($) ->
+      window.setNewDimensions = ->
+        $("#newCanvasModal").removeAttr("style").modal
+          containerCss:
+            height: 180
+            width: 200
+          ,
+          onClose: ->
+            $('.modal').modal('hide')
+            $("#newCanvasModal").attr("style", "display: none")
+
+      window.newCanvas = ->
+        newWidth = $('#resize_width').val()
+        newHeight = $('#resize_height').val()
+
+        window.location.href = '/sprites/new?width=' + newWidth + '&height=' + newHeight
+
+      postImage = ->
+        notify "Saving, please wait..."
+
+        postData =
+          'format': 'json'
+          'sprite[width]': #{width}
+          'sprite[height]': #{height}
+          'sprite[parent_id]': #{@parent_id.to_json}
+          'sprite[file_base64_encoded]': canvas.toBase64()
+          'sprite[replay_data]': JSON.stringify(canvas.getReplayData())
+
+        $.post '/sprites', postData, (data) ->
+          if data.redirect
+            window.location = data.redirect
+          else
+            notify "Saved as <a href='/sprites/" + data.sprite.id + "'>" + (data.sprite.title || ('Sprite ' + data.sprite.id)) + "</a>"
+
+          trackPageview "/event/save_drawing"
+          canvas.dirty(false)
+          $(".tool.button[title=Save]").removeAttr("disabled")
+        , "json"
+
+      pixie = Pixie.Editor.Pixel.create
+        width: #{width}
+        height: #{height}
+        pixelSize: 8
+        initializer: (canvas) ->
+          # HAX: Global ref of canvas
+          window.canvas = canvas
+
+          canvas.addAction
+            name: "replay"
+            perform: (canvas) ->
+              canvas.replay()
+            undoable: false
+
+          canvas.addAction
+            name: "new"
+            perform: (canvas) ->
+              setNewDimensions()
+            undoable: false
+
+          canvas.addAction
+            name: "download"
+            hotkeys: ["ctrl+s"]
+            perform: (canvas) ->
+              w = window.open()
+              w.document.location = canvas.toDataURL()
+            undoable: false
+
+          canvas.addAction
+            name: "save"
+            perform: (canvas) ->
+              $(".tool.button[title=Save]").attr("disabled", true)
+              postImage()
+            undoable: false
+
+          canvas.addAction
+            name: "Post to Chat"
+            icon: "/assets/icons/picture_go.png" # TODO: Get image back
+            perform: (canvas) ->
+              $('#chat_zone').addClass('visible')
+
+              $("#chat_zone iframe").get(0).contentWindow.postMessage
+                method: "post"
+                params: [canvas.toDataURL()]
+              , "*"
+
+          ((frameData) ->
+            canvas.setInitialState(frameData)
+          )(#{data.to_json})
+
+          if #{!!@replay_data}
+            canvas.replay(#{@replay_data || "null"}, #{parent_data.to_json})
+
+          window.onbeforeunload = ->
+            if canvas.dirty()
+              "Your changes haven't yet been saved, if you leave now you will lose your work."
+
+      $("#pixie").replaceWith(pixie)
+      window.currentComponent = pixie
+    )(jQuery)
