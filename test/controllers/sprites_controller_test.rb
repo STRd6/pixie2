@@ -21,7 +21,7 @@ class SpritesControllerTest < ActionController::TestCase
       @sprite = create :sprite, :user => @user
     end
 
-    should "be able to edit own sprite" do
+    should "be able to view the edit page of own sprite" do
       get :edit, :id => @sprite.id
       assert_response :success
     end
@@ -39,6 +39,8 @@ class SpritesControllerTest < ActionController::TestCase
           height: "4",
           file_base64_encoded: "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAE0lEQVQIW2N8zc73nwEJMJIuAAA/1wgBxJxmOgAAAABJRU5ErkJggg=="
         }
+
+      assert_redirected_to sprites_path(assigns(:sprite))
     end
   end
 end

@@ -1,8 +1,17 @@
 class SpritesController < ApplicationController
   respond_to :html, :json
 
-  before_filter :require_owner_or_admin, :only => [:destroy, :edit, :update]
-  before_filter :require_user, :only => [:add_tag, :remove_tag, :add_favorite, :remove_favorite]
+  before_filter :require_owner_or_admin, :only => [
+    :destroy,
+    :edit,
+    :update
+  ]
+  before_filter :require_user, :only => [
+    :add_tag,
+    :remove_tag,
+    :add_favorite,
+    :remove_favorite
+  ]
 
   def create
     @sprite = Sprite.create sprite_params
@@ -174,7 +183,7 @@ class SpritesController < ApplicationController
   private
 
   def sprite_params
-    params[:sprite].merge(:user => current_user).permit(:description)
+    params[:sprite].permit(:description, :title).merge(:user => current_user)
   end
 
   def collection
