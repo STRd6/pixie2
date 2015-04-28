@@ -1,0 +1,85 @@
+- unless user.profile.blank?
+  - @meta_desc = user.profile.html_safe
+
+:sass
+  body > .content
+    padding: 0.5em 2em
+    padding-top: 40px
+
+  .sprites_gallery
+    .header
+      padding-top: 0
+
+.feature.user_profile
+  .profile
+    - if current_user?
+      = render :partial => "tasks", :user => user
+
+    %h1
+      = user.display_name
+      - if current_user?
+        = link_to "Edit profile", [:edit, user], :class => "button btn btn-primary"
+        -# unless current_user.oauth_tokens.find_by_provider("google_oauth2")
+          = link_to "Connect Google", "/auth/google_oauth2", :class => "button btn btn-primary"
+        -# unless current_user.oauth_tokens.find_by_provider("github")
+          = link_to "Connect Github", "/auth/github", :class => "button btn btn-primary"
+
+      - else
+        - if following?(user)
+          = button_to "Unfollow", follow_path(user.id), :class => "button btn btn-primary", :method => :delete
+        - else
+          = button_to "Follow", follows_path(id: user.id), :class => "button btn btn-primary"
+
+    .info
+      = image_tag user.avatar.url(:large), :class => :avatar
+      - if user.profile
+        %p= user.profile.html_safe
+
+    %h3.inline Favorite Color
+    .favorite_color(style="background: #{user.favorite_color};")
+
+  - if current_user?
+    .activity
+      %h2 Updates
+      - updates = user.activity_updates
+      - if updates.size > 0
+        .activities
+          - updates.each do |activity|
+            = render_activity activity
+      - else
+        No recent activity
+
+      %h2 Friends Activity
+
+      - if (friends_activity = user.friends_activity).size > 0
+        .activities
+          - friends_activity.each do |activity|
+            = render_activity activity
+      - else
+        No recent activity
+
+  .sprites_gallery
+    .sprites
+
+- content_for :javascript do
+
+  :coffeescript
+    $ ->
+      sprite_gallery = new Pixie.Views.Sprites.Gallery
+        profile: true
+
+      sprite_gallery.collection.url = ->
+        #{user_sprites_path(user).to_json}
+      sprite_gallery.collection.per_page = 51
+      sprite_gallery.collection.fetch()
+
+      comments_gallery = new Pixie.Views.Comments.Gallery
+      comments_gallery.collection.per_page = 10
+      comments_gallery.collection.url = ->
+        #{recent_comments_user_path(user).to_json}
+      comments_gallery.collection.fetch()
+
+      $('.membership').tipsy
+        gravity: 'e'
+        live: true
+

@@ -176,11 +176,11 @@ class User < ActiveRecord::Base
   end
 
   def favorite?(sprite)
-    collections.find_or_create_by_name("favorites").collection_items.find_by_item(sprite).first
+    collections.find_or_create_by(name: "favorites").collection_items.find_by_item(sprite).first
   end
 
   def favorites_count
-    collections.find_or_create_by_name("favorites").collection_items.count
+    collections.find_or_create_by(name: "favorites").collection_items.count
   end
 
   def broadcast(message)

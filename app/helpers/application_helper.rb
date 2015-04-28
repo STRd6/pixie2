@@ -12,4 +12,10 @@ module ApplicationHelper
   def display_comments(commentable)
     render :partial => "shared/comments", :locals => {:commentable => commentable}
   end
+
+  def following?(user)
+    if current_user
+      current_user.following?(user)
+    end
+  end
 end

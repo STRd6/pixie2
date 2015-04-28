@@ -19,3 +19,4 @@
 config/s3.yml
 dump.sql.gz
 
+.sass-cache/*

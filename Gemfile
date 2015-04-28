@@ -14,6 +14,7 @@ gem 'public_activity'
 gem 'responders'
 gem 'sanitize'
 gem 'spring', :group => :development
+gem 'squeel'
 gem 'unicorn'
 
 group :assets do

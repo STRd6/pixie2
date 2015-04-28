@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   post "authenticate" => 'user_sessions#create',
     :as => :authenticate
 
-  resources :comments, :password_resets
+  resources :comments, :follows, :invites, :password_resets
 
   resources :sprites do
     member do
