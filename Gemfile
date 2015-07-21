@@ -21,6 +21,7 @@ gem 'unicorn'
 group :assets do
   gem 'coffee-rails'
   gem 'sass'
+  gem 'uglifier'
 end
 
 group :test do
