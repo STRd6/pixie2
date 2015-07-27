@@ -17,6 +17,7 @@ gem 'sanitize'
 gem 'spring', :group => :development
 gem 'squeel'
 gem 'unicorn'
+gem 'will_paginate'
 
 group :assets do
   gem 'coffee-rails'

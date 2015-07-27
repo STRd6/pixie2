@@ -204,6 +204,7 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
+    will_paginate (3.0.7)
 
 PLATFORMS
   ruby
@@ -230,6 +231,7 @@ DEPENDENCIES
   squeel
   uglifier
   unicorn
+  will_paginate
 
 BUNDLED WITH
    1.10.5

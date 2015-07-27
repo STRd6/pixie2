@@ -112,7 +112,7 @@ class SpritesController < ApplicationController
     current_page = @sprites.current_page
     total = @sprites.total_pages
     current_user_id = current_user ? current_user.id : nil
-    tags = Sprite.with_ids(@sprites).tag_counts
+    tags = @sprites.tag_counts
 
     @sprites_data = {
       :tagged => params[:tagged] || "",

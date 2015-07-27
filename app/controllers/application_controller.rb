@@ -77,13 +77,20 @@ class ApplicationController < ActionController::Base
 
   def save_sprites_to_user(user)
     (session[:saved_sprites] || {}).each do |sprite_id, broadcast|
-      sprite = Sprite.find(sprite_id)
-      sprite.update_attribute(:user, user)
-      if broadcast == "1"
-        sprite.broadcast_link
+      if sprite_id
+        sprite = Sprite.find(sprite_id)
+        sprite.update_attribute(:user, user)
+        if broadcast == "1"
+          sprite.broadcast_link
+        end
       end
     end
 
     session[:saved_sprites] = nil
+  end
+
+  def redirect_back_or_default(default)
+    redirect_to(session[:return_to] || default)
+    session[:return_to] = nil
   end
 end

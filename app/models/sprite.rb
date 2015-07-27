@@ -37,18 +37,15 @@ class Sprite < ActiveRecord::Base
   cattr_reader :per_page
   @@per_page = 40
 
-  scope :with_ids, lambda {|ids|
-    {:conditions => {:id => ids}}
-  }
-
   scope :for_user, lambda {|user| where(:user_id => user)}
 
-  scope :search, lambda{ |search|
-    return {} if search.blank?
-
-    like = "%#{search}%".downcase
-
-    where("lower(title) like ?", like)
+  scope :search, ->(search) {
+    if search.blank?
+      where(nil)
+    else
+      like = "%#{search}%".downcase
+      where("lower(title) like ?", like)
+    end
   }
 
   def self.data_from_path(path)
