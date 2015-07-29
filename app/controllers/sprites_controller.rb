@@ -14,7 +14,7 @@ class SpritesController < ApplicationController
   ]
 
   def create
-    @sprite = Sprite.create sprite_params
+    @sprite = Sprite.create! sprite_params
 
     track_event('create_sprite')
 
@@ -183,7 +183,7 @@ class SpritesController < ApplicationController
   private
 
   def sprite_params
-    params[:sprite].permit(:description, :title).merge(:user => current_user)
+    params[:sprite].permit(:description, :title, :width, :height, :parent_id, :replay_data, :file_base64_encoded).merge(:user => current_user)
   end
 
   def collection

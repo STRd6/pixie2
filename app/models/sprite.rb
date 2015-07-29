@@ -14,6 +14,8 @@ class Sprite < ActiveRecord::Base
     }
   )
 
+  validates_attachment_content_type :image, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
+
   acts_as_taggable
   acts_as_taggable_on :dimension, :source
 
@@ -297,7 +299,7 @@ class Sprite < ActiveRecord::Base
 
   def to_param
     if title.blank?
-      id
+      id.to_s
     else
       "#{id}-#{title.parameterize}"
     end
