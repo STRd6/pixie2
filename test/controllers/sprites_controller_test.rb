@@ -40,7 +40,7 @@ class SpritesControllerTest < ActionController::TestCase
           file_base64_encoded: "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAE0lEQVQIW2N8zc73nwEJMJIuAAA/1wgBxJxmOgAAAABJRU5ErkJggg=="
         }
 
-      assert_redirected_to sprites_path(assigns(:sprite))
+      assert_redirected_to sprite_path(assigns(:sprite))
     end
   end
 end
