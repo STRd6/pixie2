@@ -44,7 +44,7 @@ class Comment < ActiveRecord::Base
     data = {
       :commenter => commenter.comment_json,
       :id => id,
-      :body => html,
+      :body => body,
       :time => time,
     }
 
@@ -53,10 +53,6 @@ class Comment < ActiveRecord::Base
 
   def time
     created_at.getutc.iso8601
-  end
-
-  def html
-    sanitize(BlueCloth.new(body).to_html)
   end
 
   def notify_commentee

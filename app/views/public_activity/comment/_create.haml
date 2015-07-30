@@ -10,7 +10,7 @@
           = link_to image_tag(sprite.image.url, :alt => sprite.display_name, :width => sprite.width, :height => sprite.height), sprite_path(sprite)
 
     .left
-      %p= BlueCloth.new(comment.body).to_html.html_safe
+      = markdown(comment.body)
 
       %p.attribution
         %span.name= link_to comment.commenter.display_name, comment.commenter
