@@ -8,6 +8,9 @@ class User < ActiveRecord::Base
     config.validate_email_field :no_connected_sites?
     config.validate_password_field :no_connected_sites?
     config.require_password_confirmation = false
+
+    config.transition_from_crypto_providers = [Authlogic::CryptoProviders::Sha512]
+    config.crypto_provider = Authlogic::CryptoProviders::SCrypt
   end
 
   has_attached_file :avatar, S3_OPTS.merge(
@@ -18,6 +21,8 @@ class User < ActiveRecord::Base
       :tiny => ["20x20#", :png],
     }
   )
+
+  validates_attachment_content_type :avatar, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
 
   include Commentable
   include Oauthable
