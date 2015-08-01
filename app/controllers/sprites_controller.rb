@@ -91,7 +91,7 @@ class SpritesController < ApplicationController
   def update
     @sprite = Sprite.find(params[:id])
 
-    @sprite.update_attributes(params[:sprite])
+    @sprite.update_attributes(sprite_params)
 
     respond_with(@sprite) do |format|
       format.json { render :json => {
