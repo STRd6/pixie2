@@ -16,6 +16,8 @@ set :application, "staging.pixieengine.com"
 set :deploy_to, '/var/www/staging.pixieengine.com'
 set :repo_url, 'git://github.com/STRd6/pixie2.git'
 
+set :rvm_ruby_version, "2.2.2"
+
 # Extended Server Syntax
 # ======================
 # This can be used to drop a more detailed server
