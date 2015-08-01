@@ -5,23 +5,17 @@ namespace :db do
   BACKUP_FILE = 'pixie_production_2015-04-25T12:00:09-04:00.sql.gz'
 
   task :download_from_s3 do
-    require 'aws-sdk'
+    require 'aws/s3'
     require 'yaml'
 
     config = YAML.load_file("#{Rails.root}/config/s3.yml")[S3_ENV]
+    s3 = AWS::S3.new config
 
-    Aws.config[:region] = "us-east-1"
-    Aws.config[:credentials] = Aws::Credentials.new(
-      config['access_key_id'],
-      config['secret_access_key']
-    )
-    s3 = Aws::S3::Client.new
+    bucket = s3.buckets['pixie.strd6.com']
+    most_recent_backup = bucket.objects[BACKUP_FILE]
 
-    File.open(FILE_NAME, 'wb') do |file|
-      s3.get_object(
-        { bucket: 'pixie.strd6.com', key: BACKUP_FILE },
-        target: file
-      )
+    File.open FILE_NAME, "wb" do |file|
+      file.write most_recent_backup.read
     end
   end
 
