@@ -18,12 +18,20 @@ gem 'sanitize'
 gem 'spring', :group => :development
 gem 'squeel'
 gem 'unicorn'
+gem 'whenever'
 gem 'will_paginate'
 
 group :assets do
   gem 'coffee-rails'
   gem 'sass'
   gem 'uglifier'
+end
+
+group :development do
+  gem 'capistrano', '~> 3.4.0', require: false
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano-rvm', require: false
 end
 
 group :test do
