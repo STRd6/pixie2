@@ -25,10 +25,6 @@ every 12.hours do
   rake "backup:database"
 end
 
-every 24.hours do
-  rake "projects:update_libs"
-end
-
 # Every hour on the half hour send out emails to peeps who we miss
 every '30 * * * *' do
   runner "User.contact_people_we_miss"
@@ -46,8 +42,4 @@ end
 
 every :sunday, :at => "10:45pm" do
   runner "User.contact_awesome_people"
-end
-
-every :saturday, :at => '11pm' do
-  rake "report:send"
 end
