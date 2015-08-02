@@ -64,9 +64,8 @@ namespace :deploy do
     on roles(:web) do
       execute "ln -nfs #{shared_path}/production #{release_path}/public/production"
       execute "ln -nfs #{shared_path}/local/s3.yml #{release_path}/config/s3.yml"
-      execute "ln -nfs #{shared_path}/local/oauth.yml #{release_path}/config/oauth.yml"
       execute "ln -nfs #{shared_path}/local/database.yml #{release_path}/config/database.yml"
-      execute "ln -nfs #{shared_path}/local/settings.yml #{release_path}/config/settings.yml"
+      execute "ln -nfs #{shared_path}/local/secrets.yml #{release_path}/config/secrets.yml"
     end
   end
 
