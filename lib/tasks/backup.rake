@@ -13,7 +13,9 @@ def bucket
 end
 
 def database
-  "pixie2_#{Rails.env}"
+  require 'yaml'
+
+  database = YAML.load_file("#{Rails.root}/config/database.yml")[Rails.env]['database']
 end
 
 def basename(time=Time.now)
