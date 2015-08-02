@@ -21,7 +21,7 @@ elsif rails_env == 'staging'
   shared_path = "#{base_path}shared/"
   tmp_path = shared_path
 else
-  base_path = "/home/daniel/apps/pixie.strd6.com/"
+  base_path = "/home/daniel/apps/pixie2/"
   app_path = base_path
   shared_path = base_path
   tmp_path = "#{shared_path}tmp/"

@@ -18,6 +18,12 @@ set :repo_url, 'git://github.com/STRd6/pixie2.git'
 
 set :rvm_ruby_version, "2.2.2"
 
+task :copy_staging_nginx_conf do
+  execute "cp #{release_path}/config/nginx.staging.conf #{release_path}/config/nginx.conf"
+end
+
+before "deploy:finished", :copy_staging_nginx_conf
+
 # Extended Server Syntax
 # ======================
 # This can be used to drop a more detailed server
