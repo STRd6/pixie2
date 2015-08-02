@@ -2,7 +2,7 @@ namespace :db do
   FILE_NAME = 'dump.sql.gz'
   S3_ENV = "production"
   # TODO: Get latest backup somehow
-  BACKUP_FILE = 'pixie_production_2015-04-25T12:00:09-04:00.sql.gz'
+  BACKUP_FILE = 'pixie_production_2015-08-01T00:00:11-04:00.sql.gz'
 
   task :download_from_s3 do
     require 'aws/s3'
