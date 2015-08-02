@@ -46,13 +46,13 @@ namespace :deploy do
 
   task :stop do
     on roles(:app) do
-      sudo "start #{fetch(:application)}"
+      sudo "stop #{fetch(:application)}"
     end
   end
 
   task :restart do
     on roles(:app) do
-      sudo "start #{fetch(:application)}"
+      sudo "restart #{fetch(:application)}"
     end
   end
 
