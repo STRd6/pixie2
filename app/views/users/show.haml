@@ -58,28 +58,7 @@
       - else
         No recent activity
 
-  .sprites_gallery
-    .sprites
-
-- content_for :javascript do
-
-  :coffeescript
-    $ ->
-      sprite_gallery = new Pixie.Views.Sprites.Gallery
-        profile: true
-
-      sprite_gallery.collection.url = ->
-        #{user_sprites_path(user).to_json}
-      sprite_gallery.collection.per_page = 51
-      sprite_gallery.collection.fetch()
-
-      comments_gallery = new Pixie.Views.Comments.Gallery
-      comments_gallery.collection.per_page = 10
-      comments_gallery.collection.url = ->
-        #{recent_comments_user_path(user).to_json}
-      comments_gallery.collection.fetch()
-
-      $('.membership').tipsy
-        gravity: 'e'
-        live: true
-
+  %h2 Sprites
+  = will_paginate @sprites
+  .sprites
+    = render @sprites

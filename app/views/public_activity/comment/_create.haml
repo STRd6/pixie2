@@ -5,9 +5,7 @@
 
     - if commentable = comment.commentable
       - if commentable.is_a? Sprite
-        - sprite = commentable
-        .sprite_container.left
-          = link_to image_tag(sprite.image.url, :alt => sprite.display_name, :width => sprite.width, :height => sprite.height), sprite_path(sprite)
+        = render commentable
 
     .left
       = markdown(comment.body)

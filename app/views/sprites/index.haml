@@ -1,12 +1,21 @@
+%h1= @title
+
 = will_paginate @sprites
 
 = form_tag sprites_path, :method => 'get' do
   %input(type="text" placeholder="Search for..." name="search")
 
-- if @sprites.size > 0
-  = render @sprites
-- else
-  %h2 No results
-  %a(href="#{sprites_path}") Back to Gallery
+.sprites
+  - if @sprites.size > 0
+    = render @sprites
+  - else
+    %h2 No results
+    %a(href="#{sprites_path}") Back to Gallery
 
 = will_paginate @sprites
+
+- content_for :javascript do
+  :coffeescript
+    $(".sprites").isotope
+      itemSelector : '.sprite_container'
+      layoutMode : 'masonry'

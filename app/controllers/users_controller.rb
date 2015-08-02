@@ -107,6 +107,8 @@ class UsersController < ApplicationController
 
   def show
     @title = "#{user.display_name} - PixieEngine Game Creation Toolset"
+
+    @sprites = Sprite.for_user(user).order("id DESC").page(params[:page]).per_page(250)
   end
 
   def edit
@@ -162,7 +164,7 @@ class UsersController < ApplicationController
     per_page = 10 # TODO: Figure out per action per page, or just pass in from client js
 
     @models = Comment.recent_by_item_for_user(user).paginate(
-      :page => page,
+      :page => params[:page],
       :per_page => per_page
     )
 

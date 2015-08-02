@@ -64,12 +64,9 @@ class SpritesController < ApplicationController
   end
 
   def index
-    load_sprites
+    @sprites = collection
 
-    respond_to do |format|
-      format.html { }
-      format.json { render :json => @sprites_data }
-    end
+    respond_with(@sprites)
   end
 
   def show
@@ -104,25 +101,6 @@ class SpritesController < ApplicationController
         }
       }
     end
-  end
-
-  def load_sprites
-    @sprites = collection
-
-    current_page = @sprites.current_page
-    total = @sprites.total_pages
-    current_user_id = current_user ? current_user.id : nil
-    tags = @sprites.tag_counts
-
-    @sprites_data = {
-      :tagged => params[:tagged] || "",
-      :current_user_id => current_user_id,
-      :page => current_page,
-      :per_page => per_page,
-      :total => total,
-      :models => @sprites,
-      :tags => tags,
-    }
   end
 
   def load
@@ -187,14 +165,20 @@ class SpritesController < ApplicationController
   end
 
   def collection
+    @title = "Sprites"
+
     @collection ||= if params[:tagged]
+      @title += params[:tagged]
       Sprite.tagged_with(params[:tagged]).order("id DESC").search(params[:search]).paginate(:page => params[:page], :per_page => per_page)
     else
       Sprite.order("id DESC").search(params[:search]).paginate(:page => params[:page], :per_page => per_page)
     end
 
     if params[:user_id].present?
-      @collection = @collection.for_user(User.find_by_display_name!(params[:user_id]))
+      user = User.find_by_display_name!(params[:user_id])
+      @collection = @collection.for_user(user)
+
+      @title = user.display_name + @title
     end
 
     return @collection
