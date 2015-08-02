@@ -20,11 +20,17 @@ namespace :db do
   end
 
   task :import_from_dump => [:drop, :create, "schema:load"] do
+    require 'erb'
     require 'yaml'
 
-    database = YAML.load_file("#{Rails.root}/config/database.yml")[Rails.env]['database']
+    config = YAML.load(ERB.new(File.read("#{Rails.root}/config/database.yml")).result)[Rails.env]
+    database = config['database']
+    user = config['username']
 
-    `gunzip -c #{FILE_NAME} | psql -d #{database}`
+    cmd = "gunzip -c #{FILE_NAME} | psql -U #{user} -d #{database}"
+
+    puts cmd
+    `#{cmd}`
   end
 
   task :slurp => [:download_from_s3, :import_from_dump]
