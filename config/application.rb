@@ -32,5 +32,12 @@ module Pixie
     config.assets.enabled = true
     config.assets.initialize_on_precompile = false
     config.generators.stylesheet_engine = :sass
+
+    config.middleware.use ExceptionNotification::Rack,
+      :email => {
+        :email_prefix => "[pixieengine.com] ",
+        :sender_address => %{"Notifier" <notifier@pixieengine.com>},
+        :exception_recipients => %w[yahivin@gmail.com]
+      }
   end
 end
