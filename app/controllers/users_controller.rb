@@ -70,7 +70,7 @@ class UsersController < ApplicationController
   end
 
   def create
-    @object = User.new(user_params[:user])
+    @object = User.new(user_params)
 
     @object.referrer_id = session[:referrer_id]
 
@@ -115,7 +115,7 @@ class UsersController < ApplicationController
   end
 
   def update
-    user.update_attributes(params[:user])
+    user.update_attributes(user_params)
 
     respond_with user
   end
@@ -163,7 +163,7 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.permit(:user => [:avatar, :display_name, :email, :password, :profile, :favorite_color, :forum_notifications, :site_notifications, :help_tips])
+    params[:user].permit([:avatar, :display_name, :email, :password, :profile, :favorite_color, :forum_notifications, :site_notifications, :help_tips])
   end
 
   def collection
