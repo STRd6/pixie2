@@ -16,6 +16,7 @@ gem 'pry'
 gem 'public_activity'
 gem 'redcarpet'
 gem 'responders'
+gem 'rmagick'
 gem 'sanitize'
 gem 'spring', :group => :development
 gem 'squeel'
