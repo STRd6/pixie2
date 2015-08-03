@@ -62,3 +62,9 @@
   = will_paginate @sprites
   .sprites
     = render @sprites
+
+- content_for :javascript do
+  :coffeescript
+    $(".sprites").isotope
+      itemSelector : '.sprite_container'
+      layoutMode : 'masonry'
