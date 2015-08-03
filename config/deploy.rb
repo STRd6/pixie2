@@ -5,11 +5,12 @@ set :ssh_options, {
   port: 2112
 }
 
+set :rvm_ruby_version, "2.2.2"
+
 set :application, "pixieengine.com"
 set :scm, "git"
-set :repo_url, 'git://github.com/PixieEngine/pixieengine.com.git'
+set :repo_url, 'git://github.com/STRd6/pixie2.git'
 set :branch, "master"
-set :deploy_via, :remote_cache
 set :copy_exclude, [ '.git' ]
 # set :user, :rails
 
