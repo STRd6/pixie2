@@ -46,7 +46,7 @@
 .sprite_block
   %h1= sprite.display_name
 
-  = render :partial => sprite
+  = render :partial => sprite, :locals => {link_path: load_sprite_path(sprite)}
 
   %p= sprite.description
 
