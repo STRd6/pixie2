@@ -168,7 +168,7 @@ class SpritesController < ApplicationController
     @title = "Sprites"
 
     @collection ||= if params[:tagged]
-      @title += params[:tagged]
+      @title += " " + params[:tagged]
       Sprite.tagged_with(params[:tagged]).order("id DESC").search(params[:search]).paginate(:page => params[:page], :per_page => per_page)
     else
       Sprite.order("id DESC").search(params[:search]).paginate(:page => params[:page], :per_page => per_page)
@@ -178,7 +178,7 @@ class SpritesController < ApplicationController
       user = User.find_by_display_name!(params[:user_id])
       @collection = @collection.for_user(user)
 
-      @title = user.display_name + @title
+      @title = "#{user.display_name}'s " + @title
     end
 
     return @collection

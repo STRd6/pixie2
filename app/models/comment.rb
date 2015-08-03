@@ -32,14 +32,6 @@ class Comment < ActiveRecord::Base
 
   scope :for_user, lambda {|user| where(:commentee_id => user)}
 
-  scope :recent_by_item_for_user, lambda {|user|
-    select([:commentable_id, :commentable_type])
-    .where{(commenter_id != user.id) & (commentee_id == user.id)}
-    .group(:commentable_id, :commentable_type)
-    .order("MAX(id) DESC")
-    .limit(10)
-  }
-
   def as_json(options={})
     data = {
       :commenter => commenter.comment_json,

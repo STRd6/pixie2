@@ -160,16 +160,6 @@ class UsersController < ApplicationController
     redirect_to root_path, :notice => "You have been unsubscribed"
   end
 
-  def recent_comments
-    per_page = 10 # TODO: Figure out per action per page, or just pass in from client js
-
-    @models = Comment.recent_by_item_for_user(user).paginate(
-      :page => params[:page],
-      :per_page => per_page
-    )
-
-  end
-
   private
 
   def user_params
