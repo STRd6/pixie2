@@ -10,6 +10,9 @@ Rails.application.routes.draw do
   post "authenticate" => 'user_sessions#create',
     :as => :authenticate
 
+  get 'survey' => "home#survey", :as => :survey
+  get 'sitemap' => "home#sitemap"
+
   resources :comments, :follows, :invites, :password_resets
 
   resources :sprites do
