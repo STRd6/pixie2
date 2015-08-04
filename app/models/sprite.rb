@@ -13,8 +13,12 @@ class Sprite < ActiveRecord::Base
       :thumb => ["32x32#", :png]
     }
   )
-
   validates_attachment_content_type :image, :content_type => ["image/jpg", "image/jpeg", "image/png", "image/gif"]
+
+  has_attached_file :replay, S3_OPTS.merge(
+    :path => "sprites/:id/replay.json",
+  )
+  validates_attachment_content_type :replay, :content_type => ["application/json"]
 
   acts_as_taggable
   acts_as_taggable_on :dimension, :source
@@ -34,7 +38,9 @@ class Sprite < ActiveRecord::Base
   # Limit sizes to small pixel art for now
   validates_numericality_of :width, :height, :only_integer => true, :less_than_or_equal_to => MAX_LENGTH, :greater_than => 0, :message => "is too large"
 
-  after_create :update_dimension_tags!, :save_replay_data, :convert_to_io
+  before_create :convert_to_io, :save_replay_data
+
+  after_create :update_dimension_tags!
 
   cattr_reader :per_page
   @@per_page = 40
@@ -56,16 +62,6 @@ class Sprite < ActiveRecord::Base
     else
       title
     end
-  end
-
-  def load_replay_data
-    if File.exists?(replay_path) && File.size(replay_path) < MAX_REPLAY_SIZE
-      File.read(replay_path)
-    end
-  end
-
-  def replay_url
-    "/production/replays/#{id}.json"
   end
 
   def add_tag(tag)
@@ -128,6 +124,12 @@ class Sprite < ActiveRecord::Base
     update_attribute(:image, File.open(file_path))
   end
 
+  def migrate_replay_attachment
+    if File.exists?(replay_path)
+      update_attribute(:replay, File.open(replay_path))
+    end
+  end
+
   def to_param
     if title.blank?
       id.to_s
@@ -157,11 +159,11 @@ class Sprite < ActiveRecord::Base
 
   def save_replay_data
     if replay_data
-      FileUtils.mkdir_p File.dirname(replay_path)
+      file = Tempfile.new ["replay", ".json"], :encoding => 'ascii-8bit'
+      file.write replay_data
+      file.rewind
 
-      File.open(replay_path, 'wb') do |file|
-        file << replay_data
-      end
+      self.replay = file
     end
   end
 
@@ -174,8 +176,6 @@ class Sprite < ActiveRecord::Base
       file.rewind
 
       self.image = file
-
-      save # TODO: I know that we're saving twice, optimize later
     end
   end
 

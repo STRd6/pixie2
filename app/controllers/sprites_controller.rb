@@ -106,7 +106,10 @@ class SpritesController < ApplicationController
     @source_url = sprite.image.url
     @parent_id = sprite.id
     @parent_url = sprite.parent ? sprite.parent.image.url : nil
-    @replay_url = sprite.replay_url
+    @replay_url = sprite.replay.url
+
+    @width = sprite.width
+    @height = sprite.height
 
     render :action => :pixie
   end

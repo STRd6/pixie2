@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150427005032) do
+ActiveRecord::Schema.define(version: 20150804140412) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -323,21 +323,25 @@ ActiveRecord::Schema.define(version: 20150427005032) do
   end
 
   create_table "sprites", force: :cascade do |t|
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
-    t.integer  "width",                                          null: false
-    t.integer  "height",                                         null: false
-    t.integer  "frames",                         default: 1,     null: false
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
+    t.integer  "width",                                           null: false
+    t.integer  "height",                                          null: false
+    t.integer  "frames",                          default: 1,     null: false
     t.integer  "user_id"
-    t.string   "title",              limit: 255
+    t.string   "title",               limit: 255
     t.text     "description"
     t.integer  "parent_id"
-    t.integer  "comments_count",                 default: 0,     null: false
-    t.boolean  "replayable",                     default: false, null: false
-    t.string   "image_file_name",    limit: 255
-    t.string   "image_content_type", limit: 255
+    t.integer  "comments_count",                  default: 0,     null: false
+    t.boolean  "replayable",                      default: false, null: false
+    t.string   "image_file_name",     limit: 255
+    t.string   "image_content_type",  limit: 255
     t.integer  "image_file_size"
     t.datetime "image_updated_at"
+    t.string   "replay_file_name"
+    t.string   "replay_content_type"
+    t.integer  "replay_file_size"
+    t.datetime "replay_updated_at"
   end
 
   create_table "taggings", force: :cascade do |t|

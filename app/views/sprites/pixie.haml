@@ -119,15 +119,18 @@
           parentUrl = #{@parent_url.to_json}
           replayUrl = #{@replay_url.to_json}
 
-          if parentUrl and replayUrl
-            $.getJSON(replayUrl).then (data) ->
-              loadImage parentUrl, (img) ->
-                canvas.resize(img.width, img.height)
-                canvas.replay data, imageToPixelData(img)
-          else if sourceUrl
+          if sourceUrl
             loadImage sourceUrl, (img) ->
-              canvas.resize(img.width, img.height)
               canvas.setInitialState(imageToPixelData(img))
+
+              if parentUrl and replayUrl
+                $.getJSON(replayUrl).then (data) ->
+                  loadImage parentUrl, (img) ->
+                    parentData = imageToPixelData(img)
+                    canvas.replay data, parentData
+              else if replayUrl
+                $.getJSON(replayUrl).then (data) ->
+                  canvas.replay data
 
           window.onbeforeunload = ->
             if canvas.dirty()
