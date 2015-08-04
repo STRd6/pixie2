@@ -151,8 +151,6 @@ class Sprite < ActiveRecord::Base
     end
   end
 
-  private
-
   def base_path
     "#{Rails.root}/public/production/"
   end
@@ -180,10 +178,10 @@ class Sprite < ActiveRecord::Base
   end
 
   def set_dimensions
-    tempfile = image.queued_for_write[:original]
+    io = Paperclip.io_adapters.for(image.styles[:original])
 
-    unless tempfile.nil?
-      dimensions = Paperclip::Geometry.from_file(tempfile)
+    unless io.nil?
+      dimensions = Paperclip::Geometry.from_file(io)
       self.width = dimensions.width.to_i
       self.height = dimensions.height.to_i
     end
