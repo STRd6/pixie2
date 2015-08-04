@@ -188,19 +188,6 @@ class User < ActiveRecord::Base
     collections.find_or_create_by(name: "favorites").collection_items.count
   end
 
-  def broadcast(message)
-    if Rails.env.development?
-      logger.info("USER[#{id}] BROADCASTING: #{message}")
-      return
-    end
-
-    if twitter = authenticated_with?(:twitter)
-      twitter.post("/statuses/update.json",
-        "status" => message
-      )
-    end
-  end
-
   def to_param
     display_name
   end

@@ -24,7 +24,7 @@ class SpritesController < ApplicationController
           redirect_to sprite
         else
           session[:saved_sprites] ||= {}
-          session[:saved_sprites][sprite.id] = sprite.broadcast
+          session[:saved_sprites][sprite.id] = 0
 
           redirect_to sign_in_path
         end
@@ -41,7 +41,7 @@ class SpritesController < ApplicationController
           }
         else
           session[:saved_sprites] ||= {}
-          session[:saved_sprites][sprite.id] = sprite.broadcast
+          session[:saved_sprites][sprite.id] = 0
 
           render :json => { :redirect => sign_in_path }
         end

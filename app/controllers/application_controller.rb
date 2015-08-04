@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   def require_user
     unless current_user
       store_location
-      redirect_to new_user_session_url, :notice => "You must be logged in to access this page"
+      redirect_to sign_in_path, :notice => "You must be logged in to access this page"
       return false
     end
   end
@@ -80,13 +80,14 @@ class ApplicationController < ActionController::Base
       if sprite_id
         sprite = Sprite.find(sprite_id)
         sprite.update_attribute(:user, user)
-        if broadcast == "1"
-          sprite.broadcast_link
-        end
       end
     end
 
     session[:saved_sprites] = nil
+  end
+
+  def store_location
+    session[:return_to] = request.fullpath
   end
 
   def redirect_back_or_default(default)

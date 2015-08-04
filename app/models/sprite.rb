@@ -28,13 +28,13 @@ class Sprite < ActiveRecord::Base
     :inverse_of => :parent,
     :foreign_key => "parent_id"
 
-  attr_accessor :broadcast, :file_base64_encoded, :frame_data, :replay_data, :app_id, :app_sprite_id
+  attr_accessor :file_base64_encoded, :replay_data
 
   MAX_LENGTH = 640
   # Limit sizes to small pixel art for now
   validates_numericality_of :width, :height, :only_integer => true, :less_than_or_equal_to => MAX_LENGTH, :greater_than => 0, :message => "is too large"
 
-  after_create :update_dimension_tags!, :save_replay_data, :associate_app, :convert_to_io
+  after_create :update_dimension_tags!, :save_replay_data, :convert_to_io
 
   cattr_reader :per_page
   @@per_page = 40
@@ -141,13 +141,6 @@ class Sprite < ActiveRecord::Base
   def load_replay_data
     if File.exists?(replay_path) && File.size(replay_path) < MAX_REPLAY_SIZE
       File.read(replay_path)
-    end
-  end
-
-  def broadcast_link
-    if user
-      link = create_link
-      user.broadcast "Check out the sprite I made in Pixie #{link}"
     end
   end
 
@@ -386,14 +379,6 @@ class Sprite < ActiveRecord::Base
       dimensions = Paperclip::Geometry.from_file(tempfile)
       self.width = dimensions.width.to_i
       self.height = dimensions.height.to_i
-    end
-  end
-
-  def associate_app
-    if app_id
-      app_sprite = AppSprite.create(:app_id => app_id, :sprite_id => id)
-
-      self.app_sprite_id = app_sprite.id
     end
   end
 
