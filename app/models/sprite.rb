@@ -178,7 +178,7 @@ class Sprite < ActiveRecord::Base
   end
 
   def set_dimensions
-    io = Paperclip.io_adapters.for(image.styles[:original])
+    io = Paperclip.io_adapters.for(image)
 
     unless io.nil?
       dimensions = Paperclip::Geometry.from_file(io)
