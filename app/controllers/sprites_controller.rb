@@ -104,11 +104,10 @@ class SpritesController < ApplicationController
   end
 
   def load
-    @width = sprite.width
-    @height = sprite.height
-    @data = sprite.data[:frame_data]
+    @source_url = sprite.image.url
     @parent_id = sprite.id
-    @replay_data = sprite.load_replay_data if sprite.replayable?
+    @parent_url = sprite.parent ? sprite.parent.image.url : nil
+    # @replay_data_url = sprite.replay_url
 
     render :action => :pixie
   end

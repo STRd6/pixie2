@@ -50,92 +50,12 @@ class Sprite < ActiveRecord::Base
     end
   }
 
-  def self.data_from_path(path)
-    image_list = Magick::Image.read(path)
-    frame_data = []
-
-    first_image = image_list.first
-
-    width = first_image.columns
-    height = first_image.rows
-
-    if width * height > 16384
-      return {
-        :frame_data => nil
-      }
-    end
-
-    image_list.each do |image_data|
-      frame_data << image_data.get_pixels(0, 0, width, height).map do |pixel|
-        Sprite.hex_color_to_rgba(pixel.to_color(Magick::AllCompliance, false, 8, true), pixel.opacity)
-      end
-    end
-
-    return {
-      :width => width,
-      :height => height,
-      :frame_data => frame_data
-    }
-  end
-
-  def self.data_url_from_path(path, content_type)
-    "data:#{content_type};base64,#{Base64.encode64(open(path, 'rb') {|file| file.read}).gsub("\n", "")}"
-  end
-
   def display_name
     if title.blank?
       "Sprite #{id}"
     else
       title
     end
-  end
-
-  def self.color_to_alpha(sprites, color=nil)
-    sprites.each do |sprite|
-      sprite.alpha_clear! color
-    end
-  end
-
-  def alpha_clear(color_to_change=nil)
-    data = []
-
-    if tempfile = self.image.queued_for_write[:original]
-      image = Magick::Image.read(tempfile.path).first
-    else
-      image = Magick::Image.read(self.image.url).first
-    end
-
-    width = image.columns
-    height = image.rows
-
-    image.get_pixels(0, 0, width, height).each do |pixel|
-      data << pixel
-    end
-
-    color = (color_to_change) ? Magick::Pixel.from_color(color_to_change) : data[0]
-
-    data.map!{ |pixel| (pixel == color) ? Magick::Pixel.new(0,0,0,Magick::TransparentOpacity) : pixel}
-
-    image.store_pixels(0, 0, width, height, data)
-
-    io = StringIO.new(image.to_blob)
-    io.original_filename = "image.png"
-    io.content_type = "image/png"
-
-    self.image = io
-  end
-
-  def alpha_clear!(color_to_change=nil)
-    alpha_clear(color_to_change)
-    save!
-  end
-
-  def data
-    Sprite.data_from_path(image.url)
-  end
-
-  def data_url
-    Sprite.data_url_from_path(image.url, image_content_type)
   end
 
   def load_replay_data
@@ -154,92 +74,6 @@ class Sprite < ActiveRecord::Base
   def remove_tag(tag)
     self.tag_list = self.tag_list.remove(tag)
     save
-  end
-
-  def parent_data
-    parent.data[:frame_data] if parent
-  end
-
-  def self.bulk_import_files(directory_path, tag_list=nil)
-    dir = Dir.new(directory_path)
-
-    dir.each do |file_name|
-      unless file_name =~ /^\./
-        next unless file_name =~ /(\.png|\.gif)\z/
-        file_path = File.expand_path(file_name, directory_path)
-
-        unless File.directory?(file_path)
-          title = file_name[0...-4]
-          puts title
-
-          sprite = Sprite.new(:image => File.open(file_path), :title => title, :tag_list => tag_list)
-          unless sprite.save
-            puts sprite.errors
-          end
-        end
-      end
-    end
-  end
-
-  def self.splice_import_from_file(path, options={})
-    tile_width = options[:tile_width] || options[:tile_size] || 32
-    tile_height = options[:tile_height] || options[:tile_size] || 32
-    offset_x = options[:offset_x] || options[:offset] || 0
-    offset_y = options[:offset_y] || options[:offset] || 0
-    margin_x = options[:margin_x] || options[:margin] || 0
-    margin_y = options[:margin_y] || options[:margin] || 0
-    padding_x = options[:padding_x] || options[:padding] || 0
-    padding_y = options[:padding_y] || options[:padding] || 0
-    row_start = options[:row_start]
-    tags = options[:tags]
-    source_list = options[:source_list]
-    alpha_color = options[:alpha_color]
-    pixel_format = "RGBA"
-
-    puts "importing #{path}"
-
-    image = Magick::Image.read(path).first
-
-    tile_columns = (image.columns / (tile_width + 2 * padding_x + margin_x)).floor
-    tile_rows = (image.rows / (tile_height + 2 * padding_y + margin_y)).floor
-
-    ((row_start || 0)...tile_rows).each do |row|
-      tile_count = 0
-      tile_columns.times do |col|
-        pixel_data = image.export_pixels(
-          offset_x + padding_x + col * (tile_width  + 2 * padding_x + margin_x),
-          offset_y + padding_y + row * (tile_height + 2 * padding_y + margin_y),
-          tile_width,
-          tile_height,
-          pixel_format
-        )
-
-        tile_image = Magick::Image.new(tile_width, tile_height)
-        tile_image.import_pixels(0, 0, tile_width, tile_height, pixel_format, pixel_data)
-
-        # Check for blank images
-        trimmed_image = tile_image.trim
-        if trimmed_image.rows == 1 && trimmed_image.columns == 1
-          puts "discarding blank image"
-          # next
-        else
-          image_io = StringIO.new(tile_image.to_blob {self.format = "png"})
-          image_io.original_filename = "image.png"
-          image_io.content_type = "image/png"
-
-          sprite = Sprite.new(:image => image_io, :tag_list => tags, :source_list => source_list)
-
-          if alpha_color
-            sprite.alpha_clear(alpha_color)
-          end
-
-          sprite.save!
-          tile_count += 1
-        end
-      end
-
-      puts "imported row #{row}, #{tile_count} images"
-    end
   end
 
   def as_json(options={})
@@ -296,37 +130,6 @@ class Sprite < ActiveRecord::Base
     else
       "#{id}-#{title.parameterize}"
     end
-  end
-
-  def self.import_titles_from_files(sprites, directory_path)
-    dir = Dir.new(directory_path)
-
-    title_table = {}
-
-    dir.each do |file_name|
-      next if file_name =~ /^\./
-      next unless file_name =~ /(\.png|\.gif)\z/
-
-      title = file_name[0...-4].titleize
-      file_path = File.expand_path(file_name, directory_path)
-
-      checksum = Digest::MD5.hexdigest(File.read(file_path))
-      title_table[checksum] = title
-    end
-
-    update_count = 0
-
-    sprites.each do |sprite|
-      checksum = Digest::MD5.hexdigest(sprite.image.to_file.read)
-
-      if (new_title = title_table[checksum]) && sprite.title.blank?
-        sprite.update_attribute :title, new_title
-        update_count += 1
-        puts "Updating sprite #{sprite.id}'s title: #{new_title}"
-      end
-    end
-
-    puts update_count
   end
 
   def update_s3_metadata
@@ -402,14 +205,6 @@ class Sprite < ActiveRecord::Base
 
   def create_link
     Link.create(:user => user, :target => self)
-  end
-
-  def self.hex_color_to_rgba(color, opacity)
-    int_opacity = (Magick::QuantumRange - opacity) / Magick::QuantumRange.to_f
-
-    match_data = /^#([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})/.match(color)[1..3].map(&:hex)
-
-    "rgba(#{match_data.join(',')},#{int_opacity})"
   end
 
   def self.update_s3_metadata(starting_from=0)

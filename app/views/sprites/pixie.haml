@@ -1,13 +1,8 @@
 - @title = "Pixel Editor"
 - @fullscreen = true
 
-- unless sprite.new_record?
-  - @meta_desc = "Load #{sprite.meta_desc}"
-
 - width = @width || 64
 - height = @height || 64
-- data = @data
-- parent_data = sprite.parent_data
 
 :sass
   .editor.pixie
@@ -93,12 +88,50 @@
                 params: [canvas.toDataURL()]
               , "*"
 
-          ((frameData) ->
-            canvas.setInitialState(frameData)
-          )(#{data.to_json})
+          imageToPixelData = (img) ->
+            {width, height} = img
 
-          if #{!!@replay_data}
-            canvas.replay(#{@replay_data || "null"}, #{parent_data.to_json})
+            c = document.createElement("canvas")
+            c.width = width
+            c.height = height
+
+            context = c.getContext("2d")
+
+            context.drawImage img, 0, 0
+
+            imageData = context.getImageData(0, 0, width, height).data
+
+            console.log imageData
+            result = []
+
+            (width * height).times (i) ->
+              x = i * 4
+              result[i] = [imageData[x], imageData[x+1], imageData[x+2], imageData[x+3]]
+
+            return result
+
+          loadImageData = (url) ->
+            img = new Image()
+            img.crossOrigin = true
+
+            img.onload = ->
+              canvas.resize(img.width, img.height)
+              data = imageToPixelData(img)
+              canvas.setInitialState([data])
+
+            img.src = url
+
+          sourceUrl = #{@source_url.to_json}
+          if sourceUrl
+            loadImageData(sourceUrl)
+
+          # .then ->
+          #  canvas.setInitialState(frameData)
+
+          # if replay and parent
+          # @parent_url.to_json
+          # @replay_url.to_json
+          # canvas.replay(replayData, parentImageData)
 
           window.onbeforeunload = ->
             if canvas.dirty()
