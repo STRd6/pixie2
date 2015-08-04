@@ -64,6 +64,10 @@ class Sprite < ActiveRecord::Base
     end
   end
 
+  def replay_url
+    "/production/replays/#{id}.json"
+  end
+
   def add_tag(tag)
     unless tag.blank?
       self.update_attribute(:tag_list, (tag_list + [tag]).join(","))

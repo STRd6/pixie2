@@ -35,7 +35,6 @@ class SpritesController < ApplicationController
             :sprite => {
               :id => @sprite.id,
               :title => @sprite.title,
-              :app_sprite_id => @sprite.app_sprite_id,
               :src => @sprite.image.url
             }
           }
@@ -107,7 +106,7 @@ class SpritesController < ApplicationController
     @source_url = sprite.image.url
     @parent_id = sprite.id
     @parent_url = sprite.parent ? sprite.parent.image.url : nil
-    # @replay_data_url = sprite.replay_url
+    @replay_url = sprite.replay_url
 
     render :action => :pixie
   end

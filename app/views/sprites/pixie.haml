@@ -98,40 +98,36 @@
             context = c.getContext("2d")
 
             context.drawImage img, 0, 0
-
             imageData = context.getImageData(0, 0, width, height).data
 
-            console.log imageData
             result = []
 
             (width * height).times (i) ->
               x = i * 4
               result[i] = [imageData[x], imageData[x+1], imageData[x+2], imageData[x+3]]
 
-            return result
+            return [result]
 
-          loadImageData = (url) ->
+          loadImage = (url, cb) ->
             img = new Image()
             img.crossOrigin = true
-
             img.onload = ->
-              canvas.resize(img.width, img.height)
-              data = imageToPixelData(img)
-              canvas.setInitialState([data])
-
-            img.src = url
+              cb(img)
+            img.src = url + "?cors"
 
           sourceUrl = #{@source_url.to_json}
-          if sourceUrl
-            loadImageData(sourceUrl)
+          parentUrl = #{@parent_url.to_json}
+          replayUrl = #{@replay_url.to_json}
 
-          # .then ->
-          #  canvas.setInitialState(frameData)
-
-          # if replay and parent
-          # @parent_url.to_json
-          # @replay_url.to_json
-          # canvas.replay(replayData, parentImageData)
+          if parentUrl and replayUrl
+            $.getJSON(replayUrl).then (data) ->
+              loadImage parentUrl, (img) ->
+                canvas.resize(img.width, img.height)
+                canvas.replay data, imageToPixelData(img)
+          else if sourceUrl
+            loadImage sourceUrl, (img) ->
+              canvas.resize(img.width, img.height)
+              canvas.setInitialState(imageToPixelData(img))
 
           window.onbeforeunload = ->
             if canvas.dirty()
