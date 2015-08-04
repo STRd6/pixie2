@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   get 'survey' => "home#survey", :as => :survey
   get 'sitemap' => "home#sitemap"
 
+  get 'i/:token' => "invites#track", :as => :invite_token
+
   resources :comments, :follows, :invites, :password_resets
 
   resources :sprites do
