@@ -4,8 +4,6 @@ class Sprite < ActiveRecord::Base
   include PublicActivity::Model
   tracked only: :create, owner: :user
 
-  MAX_REPLAY_SIZE = 1000 * 50 # 50kb
-
   has_attached_file :image, S3_OPTS.merge(
     :use_timestamp => false,
     :path => "sprites/:id/:style.:extension",
@@ -38,9 +36,7 @@ class Sprite < ActiveRecord::Base
   # Limit sizes to small pixel art for now
   validates_numericality_of :width, :height, :only_integer => true, :less_than_or_equal_to => MAX_LENGTH, :greater_than => 0, :message => "is too large"
 
-  before_create :convert_to_io, :save_replay_data
-
-  after_create :update_dimension_tags!
+  before_create :convert_to_io, :save_replay_data, :set_dimension_tags
 
   cattr_reader :per_page
   @@per_page = 40
@@ -187,7 +183,7 @@ class Sprite < ActiveRecord::Base
     end
   end
 
-  def update_dimension_tags!
+  def set_dimension_tags
     tags = ["#{width}x#{height}"]
 
     if width == height
@@ -202,7 +198,7 @@ class Sprite < ActiveRecord::Base
       tags << "Large"
     end
 
-    update_attribute(:dimension_list, tags.join(","))
+    self.dimension_list = tags.join(',')
   end
 
   def create_link
