@@ -71,6 +71,7 @@ Rails.application.configure do
     :user_name => "yahivin@gmail.com",
     :domain => "pixieengine.com"
   }
+  config.action_mailer.perform_deliveries = false
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
