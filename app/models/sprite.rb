@@ -140,7 +140,7 @@ class Sprite < ActiveRecord::Base
 
       s3_object.copy_from s3_object.key, {
         :acl => :public_read,
-        :cache_control => "max-age=315576000",
+        :cache_control => "public, max-age=315576000",
         # :expires => 20.years.from_now.httpdate, # TODO: This doesn't seem to set...
         :metadata => nil
       }
