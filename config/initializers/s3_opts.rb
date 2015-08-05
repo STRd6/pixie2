@@ -13,7 +13,7 @@ if Rails.env.test?
 elsif Rails.env.development?
   S3_OPTS.merge!(:s3_host_alias => "dev.pixie.strd6.com.s3-website-us-east-1.amazonaws.com")
 elsif Rails.env.production?
-  S3_OPTS.merge!(:s3_host_alias => "0.pixiecdn.com")
+  S3_OPTS.merge!(:s3_host_alias => Proc.new {|attachment| "#{attachment.instance.id % 4}.pixiecdn.com" })
 elsif Rails.env.staging?
   S3_OPTS.merge!(:s3_host_alias => "staging.pixieengine.com.s3-website-us-east-1.amazonaws.com")
 end
