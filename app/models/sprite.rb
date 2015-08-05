@@ -21,6 +21,8 @@ class Sprite < ActiveRecord::Base
   acts_as_taggable
   acts_as_taggable_on :dimension, :source
 
+  has_many :favorites, class_name: "CollectionItem", as: :item
+
   belongs_to :user
   belongs_to :parent,
     :class_name => "Sprite",

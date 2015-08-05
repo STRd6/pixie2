@@ -166,21 +166,23 @@ class SpritesController < ApplicationController
   end
 
   def collection
-    @title = "Sprites"
+    return @collection if @collection
 
-    @collection ||= if params[:tagged]
-      @title += " " + params[:tagged]
-      Sprite.tagged_with(params[:tagged]).order("id DESC").search(params[:search]).paginate(:page => params[:page], :per_page => per_page)
+    items = Sprite
+
+    if params[:order] == "recent"
+      order = "id DESC"
     else
-      Sprite.order("id DESC").search(params[:search]).paginate(:page => params[:page], :per_page => per_page)
+      order = "favorites_count DESC, id DESC"
     end
 
-    if params[:user_id].present?
-      user = User.find_by_display_name!(params[:user_id])
-      @collection = @collection.for_user(user)
+    items = items
+      .order(order)
+      .search(params[:search])
+      .page(params[:page])
+      .per_page(per_page)
 
-      @title = "#{user.display_name}'s " + @title
-    end
+    @collection = items
 
     return @collection
   end

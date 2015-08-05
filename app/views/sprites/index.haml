@@ -1,4 +1,10 @@
-%h1= @title
+
+.pagination
+  - [["Favorites", nil], ["Recent", "recent"], ].each do |name, param|
+    - if params[:order] == param
+      %em.current= name
+    - else
+      = link_to name, sprites_path(order: param)
 
 = will_paginate @sprites
 
