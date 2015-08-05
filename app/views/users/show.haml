@@ -40,21 +40,11 @@
 
   - if current_user?
     .activity
-      %h2 Updates
-      - updates = user.activity_updates
-      - if updates.size > 0
+      %h2 Inbox
+      - if @activity_updates.size > 0
+        = will_paginate(@activity_updates, :param_name => :activity_page)
         .activities
-          - updates.each do |activity|
-            = render_activity activity
-      - else
-        No recent activity
-
-      %h2 Friends Activity
-
-      - if (friends_activity = user.friends_activity).size > 0
-        .activities
-          - friends_activity.each do |activity|
-            = render_activity activity
+          = render @activity_updates
       - else
         No recent activity
 

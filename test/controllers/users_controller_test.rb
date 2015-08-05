@@ -57,7 +57,6 @@ class UsersControllerTest < ActionController::TestCase
         @user.follow sprite.user
 
         @user.reload
-        assert_equal 1, @user.friends_activity.count
       end
 
       should "be able to view own profile" do

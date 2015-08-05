@@ -362,19 +362,12 @@ class User < ActiveRecord::Base
 
   def activity_updates
     id = self.id # For squeel
+    friend_ids = self.friend_ids
 
     PublicActivity::Activity
       .order("created_at DESC")
-      .limit(30)
-      .where(recipient_id: id)
+      .where{(recipient_id == id) | (owner_id >> friend_ids)}
       .where{owner_id != id}
-  end
-
-  def friends_activity
-    PublicActivity::Activity
-      .order("created_at DESC")
-      .limit(30)
-      .where(owner_id: friend_ids)
   end
 
   def chat_data

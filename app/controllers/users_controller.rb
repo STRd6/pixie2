@@ -108,6 +108,14 @@ class UsersController < ApplicationController
   def show
     @title = "#{user.display_name} - PixieEngine Game Creation Toolset"
 
+    if user == current_user
+      @activity_updates = user.activity_updates
+        .includes(:owner)
+        .includes(:trackable)
+        .page(params[:activity_page])
+        .per_page(20)
+    end
+
     @sprites = Sprite.for_user(user).order("id DESC").page(params[:page]).per_page(250)
   end
 
