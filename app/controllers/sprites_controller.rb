@@ -89,17 +89,7 @@ class SpritesController < ApplicationController
 
     @sprite.update_attributes(sprite_params)
 
-    respond_with(@sprite) do |format|
-      format.json { render :json => {
-          :id => @sprite.id,
-          :title => @sprite.display_name,
-          :description => @sprite.description || "",
-          :img => @sprite.image.url,
-          :author => (@sprite.user) ? @sprite.user.display_name : "Anonymous",
-          :author_id => @sprite.user_id
-        }
-      }
-    end
+    respond_with(@sprite)
   end
 
   def load

@@ -32,6 +32,13 @@ class SpritesControllerTest < ActionController::TestCase
       assert_equal 'Sprite has been deleted.', flash[:notice]
     end
 
+    should "be able to edit own sprite" do
+      post :update, :id => @sprite.id, :sprite => {:title => "duder"}
+      assert_response :redirect
+
+      assert_equal "duder", assigns(:sprite).title
+    end
+
     should "be able to save a sprite from the pixel editor" do
       post :create,
         sprite: {

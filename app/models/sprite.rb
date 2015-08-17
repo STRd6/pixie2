@@ -16,7 +16,7 @@ class Sprite < ActiveRecord::Base
   has_attached_file :replay, S3_OPTS.merge(
     :path => "sprites/:id/replay.json",
   )
-  validates_attachment_content_type :replay, :content_type => ["application/json"]
+  validates_attachment_content_type :replay, :content_type => ["application/json", "text/plain"]
 
   acts_as_taggable
   acts_as_taggable_on :dimension, :source
