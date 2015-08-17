@@ -162,12 +162,15 @@ class SpritesController < ApplicationController
 
     if params[:order] == "recent"
       order = "id DESC"
+      recency = 50.years.ago
     else
       order = "favorites_count DESC, id DESC"
+      recency = 3.months.ago
     end
 
     items = items
       .order(order)
+      .where{created_at > recency}
       .search(params[:search])
       .page(params[:page])
       .per_page(per_page)
