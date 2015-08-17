@@ -48,7 +48,7 @@
 
   = render :partial => sprite, :locals => {link_path: load_sprite_path(sprite)}
 
-  %p= sprite.description
+  = markdown sprite.description
 
   .clear
   %p= author_link(sprite)
@@ -62,7 +62,7 @@
 
     = render :partial => sprite.parent
 
-    %p= sprite.parent.description
+    = markdown sprite.parent.description
 
     .clear
     %p= author_link(sprite.parent)

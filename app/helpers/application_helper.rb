@@ -10,6 +10,8 @@ module ApplicationHelper
   end
 
   def markdown(text)
+    return "" unless text
+
     renderOptions = {hard_wrap: true, filter_html: true}
     markdownOptions = {autolink: true, no_intra_emphasis: true}
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(renderOptions), markdownOptions)
