@@ -15,6 +15,11 @@ Rails.application.routes.draw do
 
   get 'i/:token' => "invites#track", :as => :invite_token
 
+  get 'pixel-editor' => "sprites#new_editor", :as => :pixel_editor
+
+  # Catch old urls
+  get 'creation(/:dummy(/:dummy))' => "sprites#new"
+
   resources :comments, :follows, :invites, :password_resets
 
   resources :sprites do
@@ -29,6 +34,7 @@ Rails.application.routes.draw do
     end
 
     collection do
+      get :new_editor
       get :upload
       post :import
     end

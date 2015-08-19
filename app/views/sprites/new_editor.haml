@@ -1,0 +1,76 @@
+- @title = "Pixel Editor"
+- @fullscreen = true
+
+- width = @width || 64
+- height = @height || 64
+
+%iframe#editor(src="http://danielx.net/pixel-editor/pixie")
+
+:sass
+  html
+    overflow: hidden
+
+  body#fullscreen > .content
+    padding-top: 40px
+
+  #editor
+    width: 100%
+    height: 100%
+
+  #feedback
+    top: 600px
+
+  #open_chat, #chat_zone
+    right: 80px
+
+- content_for :javascript do
+  :coffeescript
+    window.addEventListener "message", ({origin, data, source}) ->
+      return unless origin is "http://www.danielx.net"
+
+      method = data.method ? data.status
+
+      switch method
+        when "ready"
+          source.postMessage
+            method: "loadReplayFromURL"
+            params: [
+              #{@replay_url.to_json}
+              #{@parent_url.to_json}
+              #{@source_url.to_json}
+            ]
+          , "*"
+
+        when "save"
+          notify "Saving, please wait..."
+
+          formData = new FormData()
+          uploadData =
+            'sprite[width]': data.width
+            'sprite[height]': data.height
+            'sprite[parent_id]': #{@parent_id.to_json}
+            'sprite[title]': data.title
+            'sprite[image]': data.image
+            'sprite[editor]': "pixie2"
+            'sprite[replay]': new Blob([JSON.stringify(data.state)], type: "application/json")
+
+          Object.keys(uploadData).forEach (key) ->
+            formData.append key, uploadData[key]
+
+          $.ajax
+            url: '/sprites',
+            data: formData
+            headers:
+              Accept: "application/json; charset=utf-8"
+            processData: false
+            contentType: false
+            type: 'POST'
+            success: (data) ->
+              if data.redirect
+                window.location = data.redirect
+              else
+                notify "Saved as <a href='/sprites/" + data.sprite.id + "'>" + (data.sprite.title || ('Sprite ' + data.sprite.id)) + "</a>"
+
+              trackPageview "/event/save_drawing"
+            error: ->
+              alert "Error when saving!"

@@ -62,6 +62,9 @@ class SpritesController < ApplicationController
     render :action => :pixie
   end
 
+  def new_editor
+  end
+
   def index
     @sprites = collection
 
@@ -93,17 +96,16 @@ class SpritesController < ApplicationController
   end
 
   def load
-    @source_url = sprite.image.url
+    @source_url = sprite.image.url + "?-_-"
     @parent_id = sprite.id
-    @parent_url = sprite.parent ? sprite.parent.image.url : nil
+    @parent_url = sprite.parent ? sprite.parent.image.url + "?-_-" : nil
     @replay_url = sprite.replay.url
 
     @width = sprite.width
     @height = sprite.height
 
-    render :action => :pixie
+    render :action => :new_editor
   end
-
 
   def import
     @sprite = Sprite.new
@@ -152,7 +154,7 @@ class SpritesController < ApplicationController
   private
 
   def sprite_params
-    params[:sprite].permit(:description, :title, :width, :height, :parent_id, :replay_data, :file_base64_encoded).merge(:user => current_user)
+    params[:sprite].permit(:description, :title, :width, :height, :parent_id, :editor, :replay_data, :file_base64_encoded, :image, :replay).merge(:user => current_user)
   end
 
   def collection
