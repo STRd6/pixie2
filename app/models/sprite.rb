@@ -36,7 +36,7 @@ class Sprite < ActiveRecord::Base
 
   MAX_LENGTH = 640
   # Limit sizes to small pixel art for now
-  validates_numericality_of :width, :height, :only_integer => true, :less_than_or_equal_to => MAX_LENGTH, :greater_than => 0, :message => "is too large"
+  validates_numericality_of :width, :height, :only_integer => true, :greater_than => 0, :message => "must be greater than zero"
 
   before_create :convert_to_io, :save_replay_data, :set_dimension_tags
 
