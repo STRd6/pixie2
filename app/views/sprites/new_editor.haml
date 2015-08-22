@@ -4,7 +4,7 @@
 - width = @width || 64
 - height = @height || 64
 
-%iframe#editor(src="http://danielx.net/pixel-editor/pixie")
+%iframe#editor(src="http://danielx.net/pixel-editor/pixie2")
 
 :sass
   html
@@ -52,7 +52,7 @@
             'sprite[title]': data.title
             'sprite[image]': data.image
             'sprite[editor]': "pixie2"
-            'sprite[replay]': new Blob([JSON.stringify(data.state)], type: "application/json")
+            'sprite[replay]': new Blob([data.state], type: "application/json")
 
           Object.keys(uploadData).forEach (key) ->
             formData.append key, uploadData[key]
