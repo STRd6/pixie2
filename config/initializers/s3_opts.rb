@@ -5,6 +5,7 @@ S3_OPTS = {
     'Cache-Control' => 'public, max-age=315576000',
     'Expires' => 20.years.from_now.httpdate
   },
+  :s3_protocol => 'https',
   :url => ':s3_alias_url'
 }
 
