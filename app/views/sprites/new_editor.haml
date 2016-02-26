@@ -4,7 +4,7 @@
 - width = @width || 64
 - height = @height || 64
 
-%iframe#editor(src="http://danielx.net/pixel-editor/pixie2/")
+%iframe#editor(src="https://danielx.net/pixel-editor/pixie2/")
 
 :sass
   html
@@ -26,7 +26,7 @@
 - content_for :javascript do
   :coffeescript
     window.addEventListener "message", ({origin, data, source}) ->
-      return unless origin is "http://www.danielx.net"
+      return unless origin is "https://danielx.net"
 
       method = data.method ? data.status
 
