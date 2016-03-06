@@ -4,7 +4,7 @@
 - width = @width || 64
 - height = @height || 64
 
-%iframe#editor(src="https://danielx.net/pixel-editor/pixie/")
+%iframe#editor(src="https://danielx.net/pixel-editor/pixie3/" sandbox="allow-scripts allow-modals")
 
 :sass
   html
@@ -25,8 +25,9 @@
 
 - content_for :javascript do
   :coffeescript
-    window.addEventListener "message", ({origin, data, source}) ->
-      return unless origin is "https://danielx.net"
+    window.addEventListener "message", (event) ->
+      {data, source} = event
+      return unless source is document.getElementById('editor').contentWindow
 
       method = data.method ? data.status
 
@@ -42,6 +43,7 @@
           , "*"
 
         when "save"
+          title = prompt "Title"
           notify "Saving, please wait..."
 
           formData = new FormData()
@@ -49,7 +51,7 @@
             'sprite[width]': data.width
             'sprite[height]': data.height
             'sprite[parent_id]': #{@parent_id.to_json}
-            'sprite[title]': data.title
+            'sprite[title]': title
             'sprite[image]': data.image
             'sprite[editor]': "pixie2"
             'sprite[replay]': new Blob([data.state], type: "application/json")
