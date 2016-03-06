@@ -99,7 +99,7 @@ class SpritesController < ApplicationController
     @source_url = sprite.image.url + "?-_-"
     @parent_id = sprite.id
     @parent_url = sprite.parent ? sprite.parent.image.url + "?-_-" : nil
-    @replay_url = sprite.replay.url
+    @replay_url = sprite.replay.url ? sprite.replay.url + "?-_-" : nil
 
     @width = sprite.width
     @height = sprite.height
