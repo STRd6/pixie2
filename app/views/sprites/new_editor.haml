@@ -33,14 +33,18 @@
 
       switch method
         when "ready"
-          source.postMessage
-            method: "loadReplayFromURL"
-            params: [
-              #{@replay_url.to_json}
-              #{@parent_url.to_json}
-              #{@source_url.to_json}
-            ]
-          , "*"
+          params = [
+            #{@replay_url.to_json}
+            #{@parent_url.to_json}
+            #{@source_url.to_json}
+          ]
+
+          anyParams = params.some (x) -> x
+          if anyParams
+            source.postMessage
+              method: "loadReplayFromURL"
+              params: params
+            , "*"
 
         when "save"
           title = prompt "Title"
