@@ -15,6 +15,13 @@ class SpritesControllerTest < ActionController::TestCase
     assert_response :success
   end
 
+  should "be able to get sprites list as json" do
+    get :index, :format => :json
+    body = JSON.parse(response.body)
+
+    assert_equal body[0]["id"], @sprite.id
+  end
+
   context "a logged in user" do
     setup do
       @user = log_in

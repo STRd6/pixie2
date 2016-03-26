@@ -68,7 +68,9 @@ class SpritesController < ApplicationController
   def index
     @sprites = collection
 
-    respond_with(@sprites)
+    respond_with(@sprites) do |format|
+      format.json { render :json }
+    end
   end
 
   def show
