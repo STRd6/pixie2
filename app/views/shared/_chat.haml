@@ -10,7 +10,7 @@
         - data = current_user.chat_data
       - else
         - data = ""
-      %iframe(src="http://pixi-chat.meteor.com##{data}")
+      %img(src="#{asset_path('under-construction.gif')}" title="Sorry guys, the chat blew up. I'll try and fix it again real soon!")
 
   - content_for :javascript do
     :coffeescript
