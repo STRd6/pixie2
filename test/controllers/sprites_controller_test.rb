@@ -56,5 +56,10 @@ class SpritesControllerTest < ActionController::TestCase
 
       assert_redirected_to sprite_path(assigns(:sprite))
     end
+
+    should "be able to load a sprite in the pixel editor" do
+      get :load, :id => @sprite.id
+      assert_response :success
+    end
   end
 end

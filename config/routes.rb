@@ -15,7 +15,8 @@ Rails.application.routes.draw do
 
   get 'i/:token' => "invites#track", :as => :invite_token
 
-  get 'pixel-editor' => "sprites#new_editor", :as => :pixel_editor
+  get 'pixel-editor' => "sprites#pixie", :as => :pixel_editor
+  get 'collage' => "sprites#collage", :as => :collage_editor
 
   # Catch old urls
   get 'creation(/:dummy(/:dummy))' => "sprites#new"

@@ -65,6 +65,9 @@ class SpritesController < ApplicationController
   def new_editor
   end
 
+  def collage
+  end
+
   def index
     @sprites = collection
 
@@ -101,12 +104,12 @@ class SpritesController < ApplicationController
     @source_url = sprite.image.url + "?-_-"
     @parent_id = sprite.id
     @parent_url = sprite.parent ? sprite.parent.image.url + "?-_-" : nil
-    @replay_url = sprite.replay.url ? sprite.replay.url + "?-_-" : nil
+    @replay_url = sprite.replay.present? ? sprite.replay.url + "?-_-" : nil
 
     @width = sprite.width
     @height = sprite.height
 
-    render :action => :new_editor
+    render :action => :pixie
   end
 
   def import
