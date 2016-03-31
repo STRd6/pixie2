@@ -6,7 +6,7 @@ class Sprite < ActiveRecord::Base
 
   has_attached_file :image, S3_OPTS.merge(
     :use_timestamp => false,
-    :path => "sprites/:id/:style.:extension",
+    :path => "sprites/:id/:style.:content_type_extension",
     :styles => {
       :thumb => ["32x32#", :png]
     }
