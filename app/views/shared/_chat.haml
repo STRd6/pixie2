@@ -6,11 +6,7 @@
       Pixie Chat
 
     .wrap(style="height: 100%")
-      - if current_user
-        - data = current_user.chat_data
-      - else
-        - data = ""
-      %img(src="#{asset_path('under-construction.gif')}" title="Sorry guys, the chat blew up. I'll try and fix it again real soon!")
+      %iframe(src="/chatframe" sandbox="allow-scripts allow-same-origin")
 
   - content_for :javascript do
     :coffeescript

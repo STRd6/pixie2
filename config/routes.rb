@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   get 'pixel-editor' => "sprites#pixie", :as => :pixel_editor
   get 'collage' => "sprites#collage", :as => :collage_editor
 
+  get 'chatframe' => 'static#chatframe'
+
   # Catch old urls
   get 'creation(/:dummy(/:dummy))' => "sprites#new"
 
