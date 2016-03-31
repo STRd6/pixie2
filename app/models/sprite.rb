@@ -84,7 +84,7 @@ class Sprite < ActiveRecord::Base
       :id => id,
       :parent_id => parent_id,
       :title => display_name,
-      :url => image.url,
+      :url => image_url,
       :user_id => user_id,
       :width => width
     }
