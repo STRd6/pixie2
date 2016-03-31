@@ -24,6 +24,7 @@
 - content_for :javascript do
   :coffeescript
     Postmaster
+      childLoaded: ->
       remoteTarget: -> document.getElementById("editor").contentWindow
       save: (data) ->
         title = prompt "Title"
