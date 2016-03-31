@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150819030611) do
+ActiveRecord::Schema.define(version: 20160331021406) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -175,6 +175,8 @@ ActiveRecord::Schema.define(version: 20150819030611) do
     t.datetime "replay_updated_at"
     t.integer  "favorites_count",                 default: 0,     null: false
     t.string   "editor"
+    t.string   "image_url"
+    t.string   "replay_url"
   end
 
   create_table "taggings", force: :cascade do |t|

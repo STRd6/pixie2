@@ -40,6 +40,8 @@ class Sprite < ActiveRecord::Base
 
   before_create :convert_to_io, :save_replay_data, :set_dimension_tags
 
+  after_create :update_asset_urls
+
   cattr_reader :per_page
   @@per_page = 40
 
@@ -173,6 +175,13 @@ class Sprite < ActiveRecord::Base
 
       self.image = file
     end
+  end
+
+  def update_asset_urls
+    image_url = image.url
+    replay_url = replay.url if replay.present?
+
+    update_columns(image_url: image_url, replay_url: replay_url)
   end
 
   def set_dimensions

@@ -35,7 +35,7 @@ class SpritesController < ApplicationController
             :sprite => {
               :id => @sprite.id,
               :title => @sprite.title,
-              :src => @sprite.image.url
+              :src => @sprite.image_url
             }
           }
         else
@@ -101,10 +101,10 @@ class SpritesController < ApplicationController
   end
 
   def load
-    @source_url = sprite.image.url + "?-_-"
+    @source_url = sprite.image_url + "?-_-"
     @parent_id = sprite.id
-    @parent_url = sprite.parent ? sprite.parent.image.url + "?-_-" : nil
-    @replay_url = sprite.replay.present? ? sprite.replay.url + "?-_-" : nil
+    @parent_url = sprite.parent ? sprite.parent.image_url + "?-_-" : nil
+    @replay_url = sprite.replay_url ? sprite.replay_url + "?-_-" : nil
 
     @width = sprite.width
     @height = sprite.height
