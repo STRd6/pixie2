@@ -11,6 +11,6 @@ module NotifierHelper
     url = sprite_url(sprite, @link_tracking)
     link = link_to(sprite.display_name, url)
 
-    "#{link_to image_tag(sprite.image.url, :size => "#{sprite.width}x#{sprite.height}", :alt => sprite.display_name), url} #{link}".html_safe
+    "#{link_to image_tag(sprite.image_url, :size => "#{sprite.width}x#{sprite.height}", :alt => sprite.display_name), url} #{link}".html_safe
   end
 end

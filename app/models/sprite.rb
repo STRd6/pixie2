@@ -97,7 +97,7 @@ class Sprite < ActiveRecord::Base
       url: url_for(self),
       type: self.class.name.downcase,
       image: {
-        :src => image.url,
+        :src => image_url,
         :width => width,
         :height => height,
       },
