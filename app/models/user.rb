@@ -135,7 +135,7 @@ class User < ActiveRecord::Base
   end
 
   def send_forgot_password_email
-    Notifier.forgot_password(self).deliver
+    Notifier.forgot_password(self).deliver_later
   end
 
   def self.send_newsletter_email(newsletter)
